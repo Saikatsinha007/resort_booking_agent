@@ -312,9 +312,6 @@ This launches the admin interface.
 python -m streamlit run dashboard/app.py
 ```
 
-### 3. Frontend (Optional)
-If you have a separate frontend client (e.g., React or simple HTML), serve it on a different port (e.g., 8080).
-
 ---
 
 ## 🔑 Key Configuration
