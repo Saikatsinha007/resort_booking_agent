@@ -271,4 +271,54 @@ def execute_agent_workflow(user_input: str) -> dict:
         "metadata": {"agent": agent.name, "intent": intent}
     }
 ```
+### Data Flow Diagram
+
+1.  **User** sends a message via Chat Interface.
+2.  **Agent** processes the intent and calls a **Tool** (e.g., `place_restaurant_order`).
+3.  **Tool** writes data (Order/ServiceRequest) to `resort.db` using SQLAlchemy models.
+4.  **Dashboard** (Streamlit) polls the API (`/orders`, `/requests`) which reads from `resort.db`.
+5.  **Staff** updates status on Dashboard -> API updates `resort.db` -> User can query status.
+
+### Models (`backend/models.py`)
+
+*   **Order**: Tracks `room_number`, `items` (JSON), `total_amount`, and `status`.
+*   **ServiceRequest**: Tracks `room_number`, `request_type`, `details`, and `status`.
+*   **MenuItem**: Stores the catalog of available food items and prices.
+
+### Dashboard Connectivity
+
+The Streamlit dashboard (`dashboard/app.py`) does not connect directly to the database. Instead, it communicates via the FastAPI endpoints:
+
+*   **GET /orders**: Fetches all restaurant orders.
+*   **GET /requests**: Fetches all housekeeping/service requests.
+*   **PUT /orders/{id}**: Updates order status (Pending -> Preparing -> Delivered).
+*   **PUT /requests/{id}**: Updates request status.
+
+This decoupling allows the backend to handle all logic and validation while the dashboard remains a lightweight UI layer.
+
+---
+
+## 🚀 Running the System
+
+### 1. Start the Backend Server
+This serves the API and the AI Agents.
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+
+### 2. Start the Dashboard
+This launches the admin interface.
+```bash
+python -m streamlit run dashboard/app.py
+```
+
+### 3. Frontend (Optional)
+If you have a separate frontend client (e.g., React or simple HTML), serve it on a different port (e.g., 8080).
+
+---
+
+## 🔑 Key Configuration
+
+*   **.env**: Must contain `OPENAI_API_KEY` (used here for Gemini compatibility layer or direct Gemini configuration).
+*   **menu_output.txt**: The text source for the Restaurant Agent to read the menu.
 
