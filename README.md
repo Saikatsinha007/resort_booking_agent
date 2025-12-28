@@ -1,55 +1,274 @@
-# Resort Management System - Startup Guide
+# Resort AI Management System
 
-Follow these steps to run the application. You will need to open **3 separate terminal windows**.
+## 🏨 Technical Overview
 
-### Prerequisites
-- Ensure you have Python installed.
-- Ensure your `.env` file has the correct `OPENAI_API_KEY`.
+A production-grade resort management platform leveraging modern Python stack with AI-powered agentic workflows. The system provides intelligent guest interactions through specialized AI agents while maintaining real-time operational visibility via an analytical dashboard.
 
----
+## 🛠️ Technology Stack Architecture
 
-### Step 1: Start the Backend Server
-This handles the AI logic and database.
+### Core Infrastructure Layer
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    APPLICATION LAYER                        │
+├─────────────────────────────────────────────────────────────┤
+│  FastAPI (REST API)            │   Streamlit (Dashboard)    │
+│  • ASGI with Uvicorn           │   • Reactive Web App       │
+│  • OpenAPI 3.0 Documentation   │   • Real-time Updates      │
+│  • WebSocket Support           │   • Plotly Visualization   │
+│  • Pydantic Validation         │   • Pandas DataFrames      │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    AI & BUSINESS LOGIC LAYER                │
+├─────────────────────────────────────────────────────────────┤
+│  Google Gemini 2.0 Flash      │   Custom Agent Framework    │
+│  • Generative AI Core         │   • Multi-Agent Orchestration│
+│  • Intent Classification      │   • Tool Execution Engine   │
+│  • Natural Language Processing│   • Context Management      │
+│  • Response Generation        │   • State Transition Logic  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    DATA PERSISTENCE LAYER                   │
+├─────────────────────────────────────────────────────────────┤
+│  SQLAlchemy ORM               │   SQLite Database           │
+│  • Declarative Base           │   • File-based Storage      │
+│  • Session Management         │   • ACID Compliance         │
+│  • Relationship Mapping       │   • Concurrent Access       │
+│  • Transaction Control        │   • .db File Format         │
+└─────────────────────────────────────────────────────────────┘
+```
 
-1. Open a terminal.
-2. Navigate to the project root folder:
-   ```powershell
-   cd c:\Users\EJ312WS\OneDrive\Desktop\shruti
-   ```
-3. Run the server:
-   ```powershell
-   uvicorn backend.main:app --reload --port 8000
-   ```
-   *You should see "Application startup complete".*
+### Component Integration Flow
+```
+Client Request
+     ↓
+[FastAPI Endpoint] ←── HTTP/WebSocket
+     ↓
+[Pydantic Schema Validation]
+     ↓
+[Agent Manager Routing]
+     ↓
+[Gemini 2.0 Flash Processing]
+     ↓
+[Tool Execution via SQLAlchemy]
+     ↓
+[SQLite Database Transaction]
+     ↓
+[Streamlit Dashboard ←───┐
+     ↓                   │
+[Real-time Response]     │
+     ↓                   │
+Client                  Update
+                        ↓
+                 [Plotly Charts]
+                        ↓
+                 [Pandas DataFrames]
+```
 
----
+## 📊 Detailed Technology Specifications
 
-### Step 2: Start the Frontend (Chat Interface)
-This is the chat window for guests.
+### **Backend Framework (FastAPI)**
+- **Version**: 0.104+ (ASGI-compliant)
+- **Key Features**:
+  - Automatic OpenAPI/Swagger documentation at `/docs`
+  - Async/await support for concurrent request handling
+  - Dependency injection system
+  - Request/Response validation with Pydantic
+  - WebSocket endpoints for real-time communication
+- **Configuration**: 
+  ```python
+  # Uvicorn server configuration
+  uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+  ```
 
-1. Open a **new** terminal.
-2. Navigate to the frontend folder:
-   ```powershell
-   cd c:\Users\EJ312WS\OneDrive\Desktop\shruti\frontend
-   ```
-3. Start the simple web server:
-   ```powershell
-   python -m http.server 8080
-   ```
-4. Open your browser to: **[http://localhost:8080](http://localhost:8080)**
+### **AI Engine (Google Gemini 2.0 Flash)**
+- **SDK**: `google-generativeai` Python client
+- **Model**: `gemini-2.0-flash` for low-latency operations
+- **Integration Pattern**:
+  ```
+  User Input → Prompt Engineering → Gemini API → Structured Output
+        ↓           ↓                  ↓             ↓
+  [Raw Text] [System + User]    [REST Call]   [JSON/Text]
+                              [Context + Tools]
+  ```
+- **Agent Types**:
+  1. **Receptionist**: General inquiries, facility information
+  2. **Restaurant**: Menu queries, order processing
+  3. **Room Service**: Amenity requests, maintenance
 
----
+### **Dashboard Framework (Streamlit)**
+- **Architecture**: React-like declarative UI
+- **Key Components**:
+  - `st.dataframe()`: Tabular data display with sorting/filtering
+  - `st.plotly_chart()`: Interactive visualizations
+  - `st.metric()`: Real-time KPI cards
+  - `st.selectbox()`/`st.button()`: Interactive controls
+- **Update Mechanism**: Polling-based synchronization with backend API
 
-### Step 3: Start the Dashboard (Admin View)
-This shows orders and requests.
+### **Data Visualization (Plotly + Pandas)**
+- **Plotly**: Interactive, publication-quality graphs
+  - Pie charts for request distribution
+  - Bar charts for order volume trends
+  - Time-series graphs for request patterns
+- **Pandas**: Data manipulation engine
+  ```python
+  # Typical dashboard data flow
+  API Response → Pandas DataFrame → Data Cleaning → Plotly Figure → Streamlit Display
+  ```
 
-1. Open a **third** terminal.
-2. Navigate to the project root folder:
-   ```powershell
-   cd c:\Users\EJ312WS\OneDrive\Desktop\shruti
-   ```
-3. Run the dashboard:
-   ```powershell
-   python -m streamlit run dashboard/app.py
-   ```
-4. Open your browser to: **[http://localhost:8501](http://localhost:8501)**
+### **Database Layer (SQLAlchemy + SQLite)**
+- **SQLAlchemy Features**:
+  - Declarative ORM with `Base = declarative_base()`
+  - Session management with context handlers
+  - Relationship modeling (one-to-many, many-to-one)
+  - Alembic-ready migration structure
+- **SQLite Configuration**:
+  ```
+  sqlite:///resort.db (relative path)
+  Connection pooling: 5-20 connections
+  Journal mode: WAL (Write-Ahead Logging)
+  ```
+
+### **Configuration Management (python-dotenv)**
+- **Structure**:
+  ```bash
+  .env
+  ├── API_KEYS
+  │   └── OPENAI_API_KEY=gemini-...
+  ├── DATABASE
+  │   └── DATABASE_URL=sqlite:///resort.db
+  └── APPLICATION
+      ├── LOG_LEVEL=INFO
+      └── POLLING_INTERVAL=2
+  ```
+- **Loading Pattern**:
+  ```python
+  from dotenv import load_dotenv
+  load_dotenv()  # Loads from .env file
+  ```
+
+## 🔄 System Communication Patterns
+
+### **HTTP API Communication**
+```yaml
+Endpoints:
+  Guest-Facing:
+    POST /chat: Process guest messages via AI agents
+    GET /menu: Retrieve current menu offerings
+    GET /order/{id}: Check order status
+  
+  Dashboard-Facing:
+    GET /orders: Fetch all orders (with filtering)
+    GET /requests: Fetch all service requests
+    PUT /orders/{id}: Update order status
+    PUT /requests/{id}: Update request status
+  
+  WebSocket:
+    /ws/updates: Real-time status updates
+```
+
+### **Data Flow Between Components**
+```
+┌─────────────┐    REST/JSON    ┌─────────────┐    SQLAlchemy    ┌─────────────┐
+│  Streamlit  │ ◄─────────────► │   FastAPI   │ ◄─────────────► │   SQLite    │
+│  Dashboard  │    Polling      │   Backend   │     ORM Calls   │  Database   │
+└─────────────┘   (2s interval) └─────────────┘                 └─────────────┘
+                         │                                              │
+                         │                                              │
+                    WebSocket                                      File I/O
+                    (Real-time)                                   (resort.db)
+                         │                                              │
+                         ▼                                              ▼
+┌─────────────┐    HTTP/JSON    ┌─────────────┐    Gemini API    ┌─────────────┐
+│   Client    │ ◄─────────────► │   Agent     │ ◄─────────────► │  Google AI  │
+│ (Frontend)  │   Request/      │  Framework  │    REST Calls   │   Services  │
+└─────────────┘     Response    └─────────────┘                 └─────────────┘
+```
+
+## 🏗️ Development Architecture Patterns
+
+### **Multi-Agent System Design**
+```
+                      ┌─────────────────┐
+                      │   Orchestrator  │
+                      │  (FastAPI Route)│
+                      └─────────┬───────┘
+                                │
+          ┌────────────┬────────┴───────┬─────────────┐
+          │            │                 │             │
+          ▼            ▼                 ▼             ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│  Receptionist   │ │   Restaurant    │ │  Room Service   │
+│     Agent       │ │     Agent       │ │     Agent       │
+├─────────────────┤ ├─────────────────┤ ├─────────────────┤
+│ • Facility Info │ • Menu Queries    │ • Service Reqs   │
+│ • Room Status   │ • Order Processing│ • Amenity Mgmt   │
+│ • General Q&A   │ • Dietary Info    │ • Maintenance    │
+└────────┬────────┘ └────────┬────────┘ └────────┬────────┘
+         │                   │                    │
+         └───────────────────┼────────────────────┘
+                             │
+                      ┌──────▼──────┐
+                      │  Tool Layer │
+                      │  (SQLAlchemy)│
+                      └──────┬──────┘
+                             │
+                      ┌──────▼──────┐
+                      │  Database   │
+                      │  (SQLite)   │
+                      └─────────────┘
+```
+
+### **Database Schema Implementation**
+```python
+# SQLAlchemy ORM Pattern
+class Order(Base):
+    __tablename__ = 'orders'
+    
+    # Column definitions with type hints
+    id = Column(Integer, primary_key=True)
+    room_number = Column(Integer, nullable=False)
+    items = Column(JSON)  # Storing order items as JSON
+    total_amount = Column(Float)
+    status = Column(String(50))  # Pending/Preparing/Delivered
+    
+    # SQLAlchemy relationships
+    service_requests = relationship("ServiceRequest", back_populates="order")
+    
+    # Pydantic schema for API validation
+    class Config:
+        orm_mode = True
+```
+
+### **AI Agent Execution Pattern**
+```python
+# Simplified agent execution flow
+def execute_agent_workflow(user_input: str) -> dict:
+    # 1. Input validation (Pydantic)
+    validated_input = validate_input(user_input)
+    
+    # 2. Intent classification (Gemini)
+    intent = gemini_classify(validated_input)
+    
+    # 3. Agent routing
+    agent = route_to_agent(intent)
+    
+    # 4. Tool execution
+    result = agent.execute_tools(validated_input)
+    
+    # 5. Database persistence
+    db_record = persist_to_database(result)
+    
+    # 6. Response generation
+    response = generate_response(db_record)
+    
+    return {
+        "response": response,
+        "data": db_record,
+        "metadata": {"agent": agent.name, "intent": intent}
+    }
+```
+
